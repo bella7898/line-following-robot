@@ -9,6 +9,7 @@
 #include "oled.h"
 #include "i2c.h"
 #include <avr/pgmspace.h>
+#include <string.h>
 #define THRESHOLD 200
 #define CENTER    512
 // Button pin macros
@@ -21,7 +22,7 @@
 uint8_t log_row = 0;
 uint8_t log_started = 0;
 uint8_t current_mode = 0;
-const char* mode_names[] = { "AUTO", "PATH1", "PATH2", "PATH3", "NEW PATH", "MANUAL" };
+const char* mode_names[] = { "MANUAL", "NEW PATH", "AUTO", "PATH1", "PATH2", "PATH3" };
 #define NUM_MODES 6
 #define DEBOUNCE_MS 3
 
@@ -407,7 +408,7 @@ void Check_Buttons(uint8_t pd3, uint8_t pd5, uint8_t pd6, uint8_t pb1)
 
     static uint8_t prev_pd3 = 0, prev_pd5 = 1, prev_pd6 = 1, prev_pb1 = 0;
     
-	if (pd5 == last_pd5) { if (++count_pd5 >= 3) stable_pd5 = pd5; }
+	if (pd5 == last_pd5) { if (++count_pd5 >= 2) stable_pd5 = pd5; }
 	else count_pd5 = 0;
 	
 	if (pd6 == last_pd6) { if (++count_pd6 >= 5) stable_pd6 = pd6; }
@@ -433,12 +434,12 @@ void Check_Buttons(uint8_t pd3, uint8_t pd5, uint8_t pd6, uint8_t pb1)
 	if (stable_pb1 && !prev_pb1) {
 	    IR_On();
 	    switch(current_mode){
-	        case 0: putchar('A'); break;
-	        case 1: putchar('X'); break;
-	        case 2: putchar('Y'); break;
-	        case 3: putchar('Z'); break;
-	        case 4: putchar('N'); break;
-	        case 5: putchar('M'); break;
+	        case 0: putchar('M'); break;
+	        case 1: putchar('N'); break;
+	        case 2: putchar('A'); break;
+	        case 3: putchar('X'); break;
+	        case 4: putchar('Y'); break;
+	        case 5: putchar('Z'); break;
 	        default: break;
 	    }
 	    char buf[20];
@@ -490,7 +491,7 @@ int main(void)
 	    Check_Buttons(snap_pd3, snap_pd5, snap_pd4, snap_pb1);
 	
 	    joy_state = Get_Joystick_State(x, y, sw);
-	    if (joy_state != last_joy_state) {
+	    if (strcmp(joy_state, last_joy_state) != 0) {
 	        if (joy_state[0] != '\0') {
 	            putchar(joy_state[0]);
 	            sprintf(buff, ">> JOY: %s", Get_Joystick_Label(joy_state));
@@ -506,13 +507,17 @@ int main(void)
 		if (pot_raw > 1023) pot_raw = 1023;
 		uint8_t pot_pct = (uint8_t)((uint32_t)(pot_raw - 318) * 100 / (1023 - 318));
 		
-		if (pot_pct != last_pot_pct) {
+		uint8_t pot_level = pot_pct / 10;
+
+		if (pot_level > 9) pot_level = 9; 
+		
+		if (pot_level != last_pot_pct) {
 		    char pot_buf[20];
-		    sprintf(pot_buf, "%u", pot_pct);   // sends bare integer, e.g. "73\n"
-		    printf("%s\n", pot_buf);
-		    sprintf(pot_buf, "POT: %3u%", pot_pct);
+		    sprintf(pot_buf, "%u", pot_level);   // sends bare integer, e.g. "73\n"
+		    printf("%u\n", pot_level);
+		    sprintf(pot_buf, "POT: %3u", pot_level);
 		    Log_Print(pot_buf);
-		    last_pot_pct = pot_pct;
+		    last_pot_pct = pot_level;
 		}
 		
 	    waitms(100);
