@@ -1,0 +1,323 @@
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+flash            0x08000000         0x00010000
+ram              0x20000000         0x00002000
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD startup.o
+LOAD main.o
+
+.text           0x08000000     0x2008
+ *(.vectors)
+ .vectors       0x08000000       0xb8 startup.o
+                0x08000000                Vectors
+ *(.after_vectors*)
+ .after_vectors
+                0x080000b8        0xe startup.o
+                0x080000b8                ResetInit
+ *(.text*)
+ *fill*         0x080000c6        0x2 
+ .text          0x080000c8      0x18c startup.o
+                0x08000140                initClock
+                0x08000248                EXTI2_3_Handler
+                0x08000248                TIM21_Handler
+                0x08000248                SysTick_Handler
+                0x08000248                I2C1_Handler
+                0x08000248                PendSV_Handler
+                0x08000248                NMI_Handler
+                0x08000248                WWDG_Handler
+                0x08000248                RTC_Handler
+                0x08000248                EXTI4_15_Handler
+                0x08000248                TIM2_Handler
+                0x08000248                USART1_Handler
+                0x08000248                DMA_CH4_5_6_7_Handler
+                0x08000248                Default_Handler
+                0x08000248                LPUART1_Handler
+                0x08000248                FLASH_Handler
+                0x08000248                EXTI0_1_Handler
+                0x08000248                DMA_CH1_Handler
+                0x08000248                SPI2_Handler
+                0x08000248                DMA_CH2_3_Handler
+                0x08000248                I2C2_Handler
+                0x08000248                SVC_Handler
+                0x08000248                LPTIM1_Handler
+                0x08000248                USART2_Handler
+                0x08000248                SPI1_Handler
+                0x08000248                RCC_Handler
+                0x08000248                PVD_Handler
+                0x08000248                TIM6_Handler
+                0x08000248                TIM22_Handler
+                0x08000248                ADC_COMP_Handler
+                0x0800024e                Hard_Fault_Handler
+ .text          0x08000254     0x1ab8 main.o
+                0x08000254                delay
+                0x08000280                udiv
+                0x080002ea                umod
+                0x08000312                sdiv
+                0x08000362                smod
+                0x0800038a                isqrt
+                0x080003ee                iatan2_deg10
+                0x08000494                uart_init
+                0x08000534                uart_putc
+                0x08000560                uart_puts
+                0x0800058a                uart_putu
+                0x08000604                uart_puti
+                0x0800062e                uart_puthex8
+                0x08000690                uart_put_deg10
+                0x080006ec                bt_init
+                0x08000788                bt_putc
+                0x080007b4                bt_puts
+                0x080007de                bt_putu
+                0x08000858                bt_puti
+                0x08000882                bt_put_deg10
+                0x080008de                bt_available
+                0x080008fc                bt_getc
+                0x08000910                i2c_init
+                0x080009a4                i2c_write
+                0x08000a8c                i2c_read
+                0x08000b38                i2c_write_reg
+                0x08000b80                i2c_read_reg
+                0x08000bca                i2c_scan
+                0x08000c48                mpu_init
+                0x08000d38                mpu_read_accel
+                0x08000ddc                mpu_read_gyro
+                0x08000e80                mag_init
+                0x08000fa0                mag_read
+                0x08001098                bmp_init
+                0x0800125c                bmp_read_raw_temp
+                0x08001298                bmp_read_raw_pres
+                0x080012e0                bmp_compute
+                0x08001534                button_init
+                0x08001578                button_pressed
+                0x08001592                DFPlayer_SendCommand
+                0x08001654                DFPlayer_SetVolume
+                0x08001682                DFPlayer_PlayTrack
+                0x0800169c                DFPlayer_IsBusy
+                0x080016b6                DFPlayer_WaitUntilFinished
+                0x08001704                DFPlayer_Init
+                0x0800175c                main
+ *(.rodata*)
+ .rodata        0x08001d0c      0x2fa main.o
+                0x08002008                . = ALIGN (0x4)
+ *fill*         0x08002006        0x2 
+                0x08002008                PROVIDE (__init_array_start = .)
+ *(SORT_BY_NAME(.init_array.*))
+ *(.init_array)
+                0x08002008                PROVIDE (__init_array_end = .)
+                0x08002008                . = ALIGN (0x4)
+                0x08002008                _etext = .
+
+.glue_7         0x08002008        0x0
+ .glue_7        0x08002008        0x0 linker stubs
+
+.glue_7t        0x08002008        0x0
+ .glue_7t       0x08002008        0x0 linker stubs
+
+.vfp11_veneer   0x08002008        0x0
+ .vfp11_veneer  0x08002008        0x0 linker stubs
+
+.v4_bx          0x08002008        0x0
+ .v4_bx         0x08002008        0x0 linker stubs
+
+.iplt           0x08002008        0x0
+ .iplt          0x08002008        0x0 startup.o
+
+.rel.dyn        0x08002008        0x0
+ .rel.iplt      0x08002008        0x0 startup.o
+
+.data           0x20000000        0x0 load address 0x08002008
+                0x20000000                . = ALIGN (0x4)
+                0x20000000                _data = .
+ *(.data*)
+ .data          0x20000000        0x0 startup.o
+ .data          0x20000000        0x0 main.o
+                0x20000000                . = ALIGN (0x4)
+                0x20000000                _edata = .
+
+.igot.plt       0x20000000        0x0 load address 0x08002008
+ .igot.plt      0x20000000        0x0 startup.o
+
+.bss            0x20000000       0x2c load address 0x08002008
+                0x20000000                _bss = .
+ *(.bss*)
+ .bss           0x20000000        0x0 startup.o
+ .bss           0x20000000       0x2a main.o
+                0x20000000                x
+                0x20000004                mpu_ok
+                0x20000008                mag_ok
+                0x2000000c                mag_addr
+                0x20000010                bmp_ok
+                0x20000014                bmp_ac1
+                0x20000016                bmp_ac2
+                0x20000018                bmp_ac3
+                0x2000001a                bmp_ac4
+                0x2000001c                bmp_ac5
+                0x2000001e                bmp_ac6
+                0x20000020                bmp_b1
+                0x20000022                bmp_b2
+                0x20000024                bmp_mb
+                0x20000026                bmp_mc
+                0x20000028                bmp_md
+ *(COMMON)
+                0x2000002c                . = ALIGN (0x4)
+ *fill*         0x2000002a        0x2 
+                0x2000002c                _ebss = .
+                [!provide]                PROVIDE (end = .)
+                [!provide]                PROVIDE (_HeapStart = .)
+                0x20002000                PROVIDE (_StackTop = (ORIGIN (ram) + LENGTH (ram)))
+OUTPUT(main.elf elf32-littlearm)
+LOAD linker stubs
+
+.debug_info     0x00000000     0x156c
+ .debug_info    0x00000000      0x38e startup.o
+ .debug_info    0x0000038e     0x11de main.o
+
+.debug_abbrev   0x00000000      0x3ea
+ .debug_abbrev  0x00000000      0x136 startup.o
+ .debug_abbrev  0x00000136      0x2b4 main.o
+
+.debug_aranges  0x00000000       0x48
+ .debug_aranges
+                0x00000000       0x28 startup.o
+ .debug_aranges
+                0x00000028       0x20 main.o
+
+.debug_ranges   0x00000000       0x18
+ .debug_ranges  0x00000000       0x18 startup.o
+
+.debug_line     0x00000000      0xf77
+ .debug_line    0x00000000      0x231 startup.o
+ .debug_line    0x00000231      0xd46 main.o
+
+.debug_str      0x00000000      0x624
+ .debug_str     0x00000000      0x287 startup.o
+                                0x2c4 (size before relaxing)
+ .debug_str     0x00000287      0x39d main.o
+                                0x587 (size before relaxing)
+
+.comment        0x00000000       0x49
+ .comment       0x00000000       0x49 startup.o
+                                 0x4a (size before relaxing)
+ .comment       0x00000049       0x4a main.o
+
+.ARM.attributes
+                0x00000000       0x2c
+ .ARM.attributes
+                0x00000000       0x2c startup.o
+ .ARM.attributes
+                0x0000002c       0x2c main.o
+
+.debug_frame    0x00000000      0x644
+ .debug_frame   0x00000000       0x94 startup.o
+ .debug_frame   0x00000094      0x5b0 main.o
+
+Cross Reference Table
+
+Symbol                                            File
+ADC_COMP_Handler                                  startup.o
+DFPlayer_Init                                     main.o
+DFPlayer_IsBusy                                   main.o
+DFPlayer_PlayTrack                                main.o
+DFPlayer_SendCommand                              main.o
+DFPlayer_SetVolume                                main.o
+DFPlayer_WaitUntilFinished                        main.o
+DMA_CH1_Handler                                   startup.o
+DMA_CH2_3_Handler                                 startup.o
+DMA_CH4_5_6_7_Handler                             startup.o
+Default_Handler                                   startup.o
+EXTI0_1_Handler                                   startup.o
+EXTI2_3_Handler                                   startup.o
+EXTI4_15_Handler                                  startup.o
+FLASH_Handler                                     startup.o
+Hard_Fault_Handler                                startup.o
+I2C1_Handler                                      startup.o
+I2C2_Handler                                      startup.o
+LPTIM1_Handler                                    startup.o
+LPUART1_Handler                                   startup.o
+NMI_Handler                                       startup.o
+PVD_Handler                                       startup.o
+PendSV_Handler                                    startup.o
+RCC_Handler                                       startup.o
+RTC_Handler                                       startup.o
+ResetInit                                         startup.o
+SPI1_Handler                                      startup.o
+SPI2_Handler                                      startup.o
+SVC_Handler                                       startup.o
+SysTick_Handler                                   startup.o
+TIM21_Handler                                     startup.o
+TIM22_Handler                                     startup.o
+TIM2_Handler                                      startup.o
+TIM6_Handler                                      startup.o
+USART1_Handler                                    startup.o
+USART2_Handler                                    startup.o
+Vectors                                           startup.o
+WWDG_Handler                                      startup.o
+_StackTop                                         startup.o
+__init_array_end                                  startup.o
+__init_array_start                                startup.o
+_data                                             startup.o
+_ebss                                             startup.o
+_edata                                            startup.o
+_etext                                            startup.o
+bmp_ac1                                           main.o
+bmp_ac2                                           main.o
+bmp_ac3                                           main.o
+bmp_ac4                                           main.o
+bmp_ac5                                           main.o
+bmp_ac6                                           main.o
+bmp_b1                                            main.o
+bmp_b2                                            main.o
+bmp_compute                                       main.o
+bmp_init                                          main.o
+bmp_mb                                            main.o
+bmp_mc                                            main.o
+bmp_md                                            main.o
+bmp_ok                                            main.o
+bmp_read_raw_pres                                 main.o
+bmp_read_raw_temp                                 main.o
+bt_available                                      main.o
+bt_getc                                           main.o
+bt_init                                           main.o
+bt_put_deg10                                      main.o
+bt_putc                                           main.o
+bt_puti                                           main.o
+bt_puts                                           main.o
+bt_putu                                           main.o
+button_init                                       main.o
+button_pressed                                    main.o
+delay                                             main.o
+i2c_init                                          main.o
+i2c_read                                          main.o
+i2c_read_reg                                      main.o
+i2c_scan                                          main.o
+i2c_write                                         main.o
+i2c_write_reg                                     main.o
+iatan2_deg10                                      main.o
+initClock                                         startup.o
+isqrt                                             main.o
+mag_addr                                          main.o
+mag_init                                          main.o
+mag_ok                                            main.o
+mag_read                                          main.o
+main                                              main.o
+                                                  startup.o
+mpu_init                                          main.o
+mpu_ok                                            main.o
+mpu_read_accel                                    main.o
+mpu_read_gyro                                     main.o
+sdiv                                              main.o
+smod                                              main.o
+uart_init                                         main.o
+uart_put_deg10                                    main.o
+uart_putc                                         main.o
+uart_puthex8                                      main.o
+uart_puti                                         main.o
+uart_puts                                         main.o
+uart_putu                                         main.o
+udiv                                              main.o
+umod                                              main.o
+x                                                 main.o
